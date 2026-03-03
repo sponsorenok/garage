@@ -1,0 +1,68 @@
+{% extends '@EasyAdmin/crud/detail.html.twig' %}
+
+{# ВАЖЛИВО: main, а не content #}
+{% block main %}
+    {{ parent() }}
+
+    <div class="content-panel mt-4">
+        <div class="content-panel-header">
+            <h3 class="content-panel-title">Документи</h3>
+        </div>
+
+        <div class="content-panel-body">
+            {% if docs is not defined or docs is empty %}
+                <div class="text-muted">Документів немає.</div>
+            {% else %}
+                <table class="table table-sm align-middle">
+                    <thead>
+                    <tr>
+                        <th>Назва</th>
+                        <th>Тип</th>
+                        <th>Підрозділ</th>
+                        <th>Дата</th>
+                        <th>Файл</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for d in docs %}
+                        <tr>
+                            <td>{{ d.title ?: '—' }}</td>
+                            <td>{{ d.type ?: '—' }}</td>
+                            <td>{{ d.department ?: '—' }}</td>
+                            <td>{{ d.docDate ? d.docDate|date('d.m.Y') : '—' }}</td>
+                            <td>
+                                {% if d.fileName %}
+                                    <a target="_blank" href="/uploads/documents/{{ d.fileName }}">Відкрити</a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            <div class="mt-2 d-flex gap-2">
+                <a class="btn btn-sm btn-outline-primary"
+                   href="{{ ea_url()
+                       .setController('App\\\\Controller\\\\Admin\\\\DocumentCrudController')
+                       .setAction('index')
+                       .set('filters[vehicle][comparison]', '=')
+                       .set('filters[vehicle][value]', ea.entity.instance.id)
+                   }}">
+                    Всі документи по авто
+                </a>
+
+                <a class="btn btn-sm btn-primary"
+                   href="{{ ea_url()
+                       .setController('App\\\\Controller\\\\Admin\\\\DocumentCrudController')
+                       .setAction('new')
+                       .set('vehicleId', ea.entity.instance.id)
+                   }}">
+                    + Додати документ
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

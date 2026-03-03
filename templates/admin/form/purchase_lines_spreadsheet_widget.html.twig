@@ -1,0 +1,13 @@
+{% block purchase_lines_spreadsheet_widget %}
+    {# textarea прихована, JS перетворить на таблицю #}
+    <textarea {{ block('widget_attributes') }} style="display:none">{{ value }}</textarea>
+
+    <div class="ea-purchase-sheet"
+         data-target="{{ id }}"
+         data-items="{{ form.vars.items_json|default('[]')|e('html_attr') }}"
+         data-types="{{ form.vars.types_json|default('[]')|e('html_attr') }}"
+         data-ajax-url="{{ form.vars.ajax_url|default('')|e('html_attr') }}"
+    >
+        <div id="{{ id }}__grid"></div>
+    </div>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Комплектність підрозділу{% endblock %}
+
+{% block main %}
+    <div class="content-panel">
+        <div class="content-panel-body">
+
+            <div class="mb-3">
+                <h4 class="mb-1">{{ department }}</h4>
+                {% if department.parent %}
+                    <div class="text-muted"><small>Головний підрозділ: {{ department.parent }}</small></div>
+                {% endif %}
+
+                <div class="mt-2">
+                    <span class="badge bg-secondary">Всього слотів: {{ summary.total }}</span>
+                    <span class="badge bg-danger">Некомплект: {{ summary.missing }}</span>
+                    <span class="badge bg-warning text-dark">Невідповідність: {{ summary.mismatch }}</span>
+                    <span class="badge bg-success">OK: {{ summary.ok }}</span>
+                </div>
+            </div>
+
+            <table class="table align-middle">
+                <thead>
+                <tr>
+                    <th>Штатна позиція</th>
+                    <th>Вимога</th>
+                    <th>Фактична автівка</th>
+                    <th>Статус</th>
+                    <th class="text-end">Дії</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for r in rows %}
+                    {% set rowClass = '' %}
+                    {% if r.missing %}
+                        {% set rowClass = 'table-danger' %}
+                    {% elseif r.typeMismatch or r.brandMismatch %}
+                        {% set rowClass = 'table-warning' %}
+                    {% else %}
+                        {% set rowClass = 'table-success' %}
+                    {% endif %}
+
+                    <tr class="{{ rowClass }}">
+                        <td>
+                            <strong>#{{ r.slot.id }}</strong>
+                            {% if r.slot.title %}
+                                <div class="text-muted"><small>{{ r.slot.title }}</small></div>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div><strong>{{ r.slot.type }}</strong></div>
+                            {% if r.slotBrand %}
+                                <div class="text-muted"><small>Марка: {{ r.slotBrand }}</small></div>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if r.vehicle %}
+                                <div><strong>{{ r.vehicle }}</strong></div>
+                                <div class="text-muted"><small>Тип: {{ r.vehicle.type ?: '—' }}</small></div>
+                                {% if r.vehicleBrand is not null %}
+                                    <div class="text-muted"><small>Марка: {{ r.vehicleBrand }}</small></div>
+                                {% endif %}
+                                {% if r.vehicle.department %}
+                                    <div class="text-muted"><small>Підрозділ: {{ r.vehicle.department }}</small></div>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">— не призначено —</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if r.missing %}
+                                <span class="badge bg-danger">Некомплект</span>
+                            {% elseif r.typeMismatch or r.brandMismatch %}
+                                <span class="badge bg-warning text-dark">Невідповідність</span>
+                                <div class="text-muted"><small>
+                                        {% if r.typeMismatch %}тип{% endif %}
+                                        {% if r.typeMismatch and r.brandMismatch %}, {% endif %}
+                                        {% if r.brandMismatch %}марка{% endif %}
+                                    </small></div>
+                            {% else %}
+                                <span class="badge bg-success">OK</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end">
+                            {% if r.vehicle %}
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   href="{{ ea_url()
+                                       .unset('filters').unset('query').unset('page')
+                                       .setController('App\\Controller\\Admin\\VehicleCrudController')
+                                       .setAction('edit')
+                                       .setEntityId(r.vehicle.id)
+                                   }}">
+                                    Відкрити авто
+                                </a>
+                            {% endif %}
+
+                            {% if r.vehicle %}
+                                {% if r.assignment %}
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       href="{{ path('admin_document_new_for_assignment', {
+                                           assignmentId: r.assignment.id,
+                                           returnTo: path('admin_department_staffing', {id: department.id})
+                                       }) }}">
+                                        + Документ
+                                    </a>
+                                {% else %}
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       href="{{ path('admin_vehicle_assignment_bootstrap', {
+                                           vehicleId: r.vehicle.id,
+                                           returnTo: path('admin_department_staffing', {id: department.id})
+                                       }) }}">
+                                        + Документ
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if r.missing %}
+                                <a class="btn btn-sm btn-primary"
+                                   href="{{ ea_url()
+                                       .unset('filters').unset('query').unset('page')
+                                       .setController('App\\Controller\\Admin\\VehicleCrudController')
+                                       .setAction('index')
+                                       .set('unassigned', 1)
+                                       .set('typeId', r.slot.type.id)
+                                       .set('assignSlot', r.slot.id)
+                                       .set('returnTo', path('admin_department_staffing', {id: department.id}))
+                                   }}">
+                                    Призначити авто
+                                </a>
+
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5">У цього підрозділу немає штатних слотів.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if freeVehicles is defined and freeVehicles|length > 0 %}
+                <div class="mt-4">
+                    <h5 class="mb-2">Автівки у підрозділі без штатної позиції</h5>
+
+                    <table class="table table-sm align-middle">
+                        <thead>
+                        <tr>
+                            <th>Автівка</th>
+                            <th>Тип</th>
+                            <th class="text-end">Дії</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for v in freeVehicles %}
+                            {% set a = freeAssignments[v.id] ?? null %}
+                            <tr>
+                                <td><strong>{{ v }}</strong></td>
+                                <td>{{ v.type ?: '—' }}</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       href="{{ ea_url()
+                                           .unset('filters').unset('query').unset('page')
+                                           .setController('App\\Controller\\Admin\\VehicleCrudController')
+                                           .setAction('edit')
+                                           .setEntityId(v.id)
+                                       }}">
+                                        Відкрити авто
+                                    </a>
+
+                                    {% if a %}
+                                        <a class="btn btn-sm btn-outline-primary"
+                                           href="{{ path('admin_document_new_for_assignment', {
+                                               assignmentId: a.id,
+                                               returnTo: path('admin_department_staffing', {id: department.id})
+                                           }) }}">
+                                            + Документ
+                                        </a>
+                                    {% else %}
+                                        <a class="btn btn-sm btn-outline-primary"
+                                           href="{{ path('admin_vehicle_assignment_bootstrap', {
+                                               vehicleId: v.id,
+                                               returnTo: path('admin_department_staffing', {id: department.id})
+                                           }) }}">
+                                            + Документ
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            <div class="mt-3 text-muted">
+                <small>
+                    Порада: призначай автівки на “Штатну позицію” через редагування автівки (поле <b>Штатна позиція</b>).
+                </small>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

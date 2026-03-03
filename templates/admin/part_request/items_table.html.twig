@@ -1,0 +1,49 @@
+{# templates/admin/part_request/items_table.html.twig #}
+
+{% set req = entity.instance %}
+{% set items = req.items %}
+
+<div class="card">
+    <div class="card-body p-2">
+
+        {% if items is empty %}
+            <div class="text-muted">Немає позицій</div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th style="width:70px;">№</th>
+                        <th>Найменування</th>
+                        <th style="width:220px;">Тип</th>
+                        <th style="width:110px;">К-сть</th>
+                        <th style="width:320px;">Авто</th>
+                        <th>Коментар</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for it in items %}
+                        <tr>
+                            <td>{{ it.lineNo }}</td>
+                            <td>{{ it.nameRaw }}</td>
+                            <td>{{ it.getCategoryLabel() }}</td>
+                            <td>{{ it.qty }}</td>
+                            <td>
+                                {% if it.vehicle %}
+                                    {{ it.vehicle }}
+                                {% elseif req.defaultVehicle %}
+                                    <span class="text-muted">{{ req.defaultVehicle }}</span>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>{{ it.comment ?: '' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+    </div>
+</div>

@@ -1,0 +1,63 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Залишки{% endblock %}
+
+{% block main %}
+    <div class="content-panel">
+        <div class="content-panel-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Склад</th>
+                    <th>Номенклатура</th>
+                    <th class="text-end">
+                        Залишок
+                        <span class="text-muted" title="Клікніть для перегляду руху складу">ⓘ</span>
+                    </th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for b in balances %}
+                    {% set unitUa = b.unit == 'pcs' ? 'шт' : (b.unit == 'liter' ? 'л' : (b.unit == 'kg' ? 'кг' : b.unit)) %}
+                    {% set isNegative = (0 + b.qtyBalance) < 0 %}
+                    <tr class="{{ isNegative ? 'table-danger' : '' }}">
+                        <td>{{ b.warehouseName }}</td>
+                        <td>
+
+                                {{ b.itemName }}
+
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ ea_url()
+                                .unset('filters')
+                                .unset('query')
+                                .unset('page')
+                                .setController('App\\Controller\\Admin\\InventoryTransactionCrudController')
+                                .setAction('index')
+
+                                .set('filters[warehouse][comparison]', '=')
+                                .set('filters[warehouse][value]', b.warehouseId)
+
+                                .set('filters[item][comparison]', '=')
+                                .set('filters[item][value]', b.itemId)
+
+                                .set('sort[createdAt]', 'DESC')
+                            }}">
+                                {{ b.qtyBalance }} {{ unitUa }}
+                            </a>
+                        </td>
+
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3">Немає даних.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <p class="text-muted mt-3">
+                <small>Мінусові залишки дозволені, рядки підсвічено червоним.</small>
+            </p>
+        </div>
+    </div>
+{% endblock %}

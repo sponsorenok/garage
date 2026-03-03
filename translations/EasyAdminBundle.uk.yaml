@@ -1,0 +1,12 @@
+# translations/EasyAdminBundle.uk.yaml
+Dashboard: "Панель керування"
+Entities: "Сутності"
+Actions: "Дії"
+New: "Створити"
+Edit: "Редагувати"
+Delete: "Видалити"
+Save changes: "Зберегти зміни"
+Back to listing: "Назад до списку"
+Search: "Пошук"
+Filters: "Фільтри"
+No results found: "Нічого не знайдено"

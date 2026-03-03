@@ -1,0 +1,8 @@
+{% set d = entity.instance %}
+{% if d.fileName %}
+    <a target="_blank" href="/uploads/documents/{{ d.fileName }}">
+        {{ d.fileName }}
+    </a>
+{% else %}
+    —
+{% endif %}

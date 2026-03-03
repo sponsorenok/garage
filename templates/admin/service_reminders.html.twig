@@ -1,0 +1,146 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Нагадування ТО{% endblock %}
+
+{% block main %}
+    <div class="content-panel">
+        <div class="content-panel-body">
+            <table class="table align-middle">
+                <thead>
+                <tr>
+                    <th>Авто</th>
+                    <th>План</th>
+                    <th>Статус</th>
+
+                    <th>Причина</th>
+                    <th class="text-end">Дії</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for r in rows %}
+                    {% set rowClass = '' %}
+                    {% if r.status == 'OVERDUE' %}
+                        <span class="badge bg-danger">Прострочено</span>
+                    {% elseif r.status == 'DUE_SOON' %}
+                        <span class="badge bg-warning text-dark">Скоро</span>
+                    {% elseif r.status == 'IN_PROGRESS' %}
+                        <span class="badge bg-info text-dark">В процесі</span>
+                    {% elseif r.status == 'READY_TO_CLOSE' %}
+                        <span class="badge bg-success">Готово</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Немає бази</span>
+                    {% endif %}
+
+
+                    <tr class="{{ rowClass }}">
+
+                    <td>
+                            {# підстав своє відображення авто: номер/назва #}
+                            <strong>{{ r.vehicle }}</strong>
+                        </td>
+                        <td>
+                            <strong>{{ r.plan.name }}</strong><br>
+                            <span class="text-muted"><small>{{ r.taskName }}</small></span>
+                        </td>
+                        <td>
+                            {% if r.status == 'OVERDUE' %}
+                                <span class="badge bg-danger">Прострочено</span>
+                            {% elseif r.status == 'DUE_SOON' %}
+                                <span class="badge bg-warning text-dark">Скоро</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Немає бази</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% for reason in r.reasons %}
+                                <div class="mb-1">
+                                    <span class="text-muted"><small>{{ reason.label }}</small></span><br>
+
+                                    {% if reason.dueKm is defined %}
+                                        <strong>до {{ reason.dueKm }} км</strong>
+                                        {% if reason.left < 0 %}
+                                            <span class="text-danger"><small> (перевищено на {{ reason.left|abs }} км)</small></span>
+                                        {% else %}
+                                            <span class="text-muted"><small> (залишилось {{ reason.left }} км)</small></span>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% if reason.dueAt is defined %}
+                                        <strong>до {{ reason.dueAt|date('d.m.Y') }}</strong>
+                                        {% if reason.left < 0 %}
+                                            <span class="text-danger"><small> (перевищено на {{ reason.left|abs }} дн.)</small></span>
+                                        {% else %}
+                                            <span class="text-muted"><small> (залишилось {{ reason.left }} дн.)</small></span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </td>
+
+
+                        <td class="text-end">
+
+                            {# Якщо вже є відкрите ТО — не створюємо нове, а переходимо до існуючого #}
+                            {% if r.openEvent is defined and r.openEvent %}
+                                <a class="btn btn-sm btn-primary"
+                                   href="{{ ea_url()
+                                       .unset('filters').unset('query').unset('page')
+                                       .setController('App\\Controller\\Admin\\ServiceEventCrudController')
+                                       .setAction('edit')
+                                       .setEntityId(r.openEvent.id)
+                                   }}">
+                                    Перейти до ТО
+                                </a>
+
+                                {% if r.status == 'READY_TO_CLOSE' %}
+                                    <form method="post"
+                                          action="{{ path('admin_service_event_close', {id: r.openEvent.id}) }}"
+                                          style="display:inline-block">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('close_event_' ~ r.openEvent.id) }}">
+                                        <button class="btn btn-sm btn-success">Закрити ТО</button>
+                                    </form>
+                                {% endif %}
+
+                            {% else %}
+                                {# 1) Створити ТО з prefill #}
+                                <a class="btn btn-sm btn-primary"
+                                   href="{{ ea_url()
+                                       .unset('filters').unset('query').unset('page')
+                                       .setController('App\\Controller\\Admin\\ServiceEventCrudController')
+                                       .setAction('new')
+                                       .set('vehicleId', r.vehicle.id)
+                                       .set('planId', r.plan.id)
+                                   }}">
+                                    Створити ТО
+                                </a>
+                            {% endif %}
+
+                            {# 2) Історія ТО (фільтр по авто+плану) #}
+                            <a class="btn btn-sm btn-outline-secondary"
+                               href="{{ ea_url()
+                                   .unset('filters').unset('query').unset('page')
+                                   .setController('App\\Controller\\Admin\\ServiceEventCrudController')
+                                   .setAction('index')
+                                   .set('filters[vehicle][comparison]', '=')
+                                   .set('filters[vehicle][value]', r.vehicle.id)
+                                   .set('filters[servicePlan][comparison]', '=')
+                                   .set('filters[servicePlan][value]', r.plan.id)
+                                   .set('sort[serviceDate]', 'DESC')
+                               }}">
+                                Історія
+                            </a>
+
+                        </td>
+
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5">Немає нагадувань 🎉</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <p class="text-muted mt-3"><small>Статус рахується по правилу “км або дата”: якщо спрацювала будь-яка умова — ТО потрібне.</small></p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% block part_request_items_spreadsheet_widget %}
+    {# Беремо все з form.vars, щоб name/id точно були #}
+    {% set tid = form.vars.id %}
+    {% set tname = form.vars.full_name %}
+    {% set tvalue = form.vars.value %}
+
+    <div class="ea-partrequest-sheet"
+         data-target="{{ tid }}"
+         data-vehicles='{{ vehicles_json|default("[]")|raw }}'
+         data-types='{{ types_json|default("[]")|raw }}'>
+
+        <div id="{{ tid }}__grid"></div>
+
+        {# ВАЖЛИВО: textarea має бути В ФОРМІ, з name=... #}
+        <textarea id="{{ tid }}"
+                  name="{{ tname }}"
+                  style="display:none">{{ tvalue }}</textarea>
+    </div>
+{% endblock %}
