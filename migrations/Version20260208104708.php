@@ -28,7 +28,7 @@ final class Version20260208104708 extends AbstractMigration
         $this->addSql('ALTER TABLE part_request ADD CONSTRAINT FK_BBCB7894AE80F5DF FOREIGN KEY (department_id) REFERENCES department (id) ON DELETE RESTRICT NOT DEFERRABLE');
         $this->addSql('ALTER TABLE part_request_item ADD CONSTRAINT FK_52F85274427EB8A5 FOREIGN KEY (request_id) REFERENCES part_request (id) ON DELETE CASCADE NOT DEFERRABLE');
         $this->addSql('ALTER TABLE part_request_item ADD CONSTRAINT FK_52F85274545317D1 FOREIGN KEY (vehicle_id) REFERENCES vehicle (id) ON DELETE SET NULL NOT DEFERRABLE');
-        $this->addSql('DROP INDEX uniq_va_active_vehicle');
+//        $this->addSql('DROP INDEX uniq_va_active_vehicle');
     }
 
     public function down(Schema $schema): void
