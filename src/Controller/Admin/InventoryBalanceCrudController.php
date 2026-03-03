@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Controller\Admin;
+
 use App\Dto\InventoryBalance;
 use App\Controller\Admin\InventoryTransactionCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -8,7 +11,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 
 final class InventoryBalanceCrudController extends \EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController
 {
-    public function __construct(private AdminUrlGenerator $adminUrlGenerator) {}
+    public function __construct(private AdminUrlGenerator $adminUrlGenerator)
+    {
+    }
 
     public static function getEntityFqcn(): string
     {
