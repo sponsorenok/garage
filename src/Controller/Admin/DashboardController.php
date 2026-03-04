@@ -8,6 +8,7 @@ use App\Entity\PartRequest;
 use App\Entity\ServiceEvent;
 use App\Entity\ServiceEventItem;
 use App\Entity\Supplier;
+use App\Entity\User;
 use App\Entity\Vehicle;
 use App\Entity\VehicleType;
 use App\Entity\Warehouse;
@@ -50,6 +51,7 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Головна', 'fa fa-home');
+        yield MenuItem::linkToCrud('Users', 'fas fa-users', User::class);
 
         // This creates a sidebar link to Vehicle CRUD
         yield MenuItem::section('Довідники');
