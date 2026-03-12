@@ -1,0 +1,231 @@
+/* кореневий контейнер items */
+.ea-form-collection-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* === 1 ROW = 1 ITEM === */
+.field-collection-item.field-collection-item-complex {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    background: var(--bs-body-bg);
+    margin-bottom: 6px;
+}
+
+/* ховаємо accordion кнопку (стрілку) */
+.field-collection-item .accordion-button {
+    display: none !important;
+}
+
+/* лишаємо delete-кнопку */
+.field-collection-item .accordion-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 8px;
+}
+
+/* body без зайвих відступів */
+.field-collection-item .accordion-body {
+    padding: 8px !important;
+}
+
+/* === ГОЛОВНИЙ GRID З ПОЛЯМИ === */
+[id^="PartRequest_items_"]  {
+    display: grid;
+    grid-template-columns: 70px 1.6fr 180px 260px 90px 1fr;
+    gap: 8px;
+    align-items: start;
+}
+
+/* прибираємо flex-fill */
+[id^="PartRequest_items_"] .flex-fill {
+    display: none !important;
+}
+
+/* прибираємо labels */
+[id^="PartRequest_items_"] label {
+    display: none !important;
+}
+
+/* form-group без margin */
+[id^="PartRequest_items_"] .form-group {
+    margin: 0 !important;
+}
+
+/* компактні поля */
+[id^="PartRequest_items_"] input,
+[id^="PartRequest_items_"] select,
+[id^="PartRequest_items_"] textarea {
+    font-size: 0.9rem;
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+}
+/* --- Header (зроби шапку реально "рядком") --- */
+.pr-head{
+    display: grid;
+    grid-template-columns: 70px 1.6fr 180px 260px 90px 1fr 44px;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    background: var(--bs-body-bg);
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+/* --- Прибираємо “accordion” UX, але лишаємо delete --- */
+.field-collection-item.field-collection-item-complex .accordion-button{
+    display:none !important;
+}
+.field-collection-item.field-collection-item-complex .accordion-header{
+    display:flex;
+    justify-content:flex-end;
+    padding: 4px 8px;
+}
+
+/* accordion body компактно */
+.field-collection-item.field-collection-item-complex .accordion-body{
+    padding: 8px !important;
+}
+
+/* Bootstrap row часто ламає ширину — нейтралізуємо */
+.field-collection-item.field-collection-item-complex .accordion-body > .row{
+    margin: 0 !important;
+}
+.field-collection-item.field-collection-item-complex .accordion-body > .row > *{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* --- Ось головне: робимо grid саме на внутрішньому контейнері з form-group --- */
+.field-collection-item.field-collection-item-complex [id^="PartRequest_items_"] {
+    display: grid !important;
+    grid-template-columns: 70px 1.6fr 180px 260px 90px 1fr;
+    gap: 8px;
+    align-items: start;
+}
+
+/* flex-fill прибрати */
+.field-collection-item.field-collection-item-complex [id^="PartRequest_items_"] .flex-fill{
+    display:none !important;
+}
+
+/* Лейбли прибрати (бо є шапка) */
+.field-collection-item.field-collection-item-complex [id^="PartRequest_items_"] label{
+    display:none !important;
+}
+
+/* margin у form-group = 0 */
+.field-collection-item.field-collection-item-complex [id^="PartRequest_items_"] .form-group{
+    margin: 0 !important;
+}
+
+/* Компактні контролі */
+.field-collection-item.field-collection-item-complex [id^="PartRequest_items_"] input,
+.field-collection-item.field-collection-item-complex [id^="PartRequest_items_"] select,
+.field-collection-item.field-collection-item-complex [id^="PartRequest_items_"] textarea{
+    font-size: .9rem;
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+}
+.pr-row {
+    display: grid;
+    grid-template-columns:
+        60px
+        2fr
+        160px
+        260px
+        90px
+        2fr
+        40px;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+}
+
+.pr-row .form-control,
+.pr-row .form-select {
+    width: 100%;
+}
+
+.pr-row .form-group {
+    margin: 0;
+}
+/* 100% width для блоку позицій */
+.pr-items-wrap,
+.pr-items-wrap .field-collection,
+.pr-items-wrap .form-widget,
+.pr-items-wrap .ea-form-collection-items {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Шапка таблиці */
+.pr-head{
+    display: grid;
+    grid-template-columns: 70px 1.6fr 180px 260px 90px 1fr 44px;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    background: var(--bs-body-bg);
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+/* Кожен item оформлюємо як рядок */
+.pr-items-wrap .field-collection-item.field-collection-item-complex{
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    background: var(--bs-body-bg);
+    margin-bottom: 6px;
+}
+
+/* Ховаємо "accordion-button", лишаємо delete */
+.pr-items-wrap .accordion-button{ display:none !important; }
+.pr-items-wrap .accordion-header{
+    display:flex;
+    justify-content:flex-end;
+    padding: 4px 8px;
+}
+
+/* Відкриваємо body завжди (щоб не було collapse) */
+.pr-items-wrap .accordion-collapse{
+    display:block !important;
+}
+.pr-items-wrap .accordion-collapse.collapse{
+    height:auto !important;
+}
+
+/* Прибираємо зайві відступи */
+.pr-items-wrap .accordion-body{ padding: 8px !important; }
+.pr-items-wrap .accordion-body > .row{ margin:0 !important; }
+.pr-items-wrap .accordion-body > .row > *{ padding-left:0 !important; padding-right:0 !important; }
+
+/* Головний контейнер полів у тебе: #PartRequest_items_X > div */
+.pr-items-wrap [id^="PartRequest_items_"] {
+    display:grid !important;
+    grid-template-columns: 70px 1.6fr 180px 260px 90px 1fr;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+}
+
+/* flex-fill прибрати */
+.pr-items-wrap [id^="PartRequest_items_"] .flex-fill{ display:none !important; }
+
+/* прибрати labels */
+.pr-items-wrap [id^="PartRequest_items_"] label{ display:none !important; }
+
+/* form-group без margin */
+.pr-items-wrap [id^="PartRequest_items_"] .form-group{ margin:0 !important; }
+
+/* компактні поля */
+.pr-items-wrap [id^="PartRequest_items_"] input,
+.pr-items-wrap [id^="PartRequest_items_"] select{
+    width:100%;
+    font-size:.9rem;
+    padding-top:.25rem;
+    padding-bottom:.25rem;
+}
