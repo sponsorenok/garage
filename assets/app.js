@@ -5,6 +5,8 @@
  * which should already be in your base.html.twig.
  */
 import './styles/app.css';
+import './styles/jspreadsheet.css';
+import './styles/jsuites.css';
 import "./admin/items_spreadsheet.js";
 import "./admin/purchase_lines_spreadsheet.js";
 

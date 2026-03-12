@@ -97,11 +97,11 @@ class DashboardController extends AbstractDashboardController
     {
         return Assets::new()
             ->addCssFile('assets/admin.css')
-            ->addAssetMapperEntry('app')
+            ->addAssetMapperEntry('app');
 
             // CSS (напряму)
-            ->addCssFile('https://cdn.jsdelivr.net/npm/jspreadsheet-ce@5.0.4/dist/jspreadsheet.css')
-            ->addCssFile('https://cdn.jsdelivr.net/npm/jsuites@6.1.1/dist/jsuites.css');
+//            ->addCssFile('https://cdn.jsdelivr.net/npm/jspreadsheet-ce@5.0.4/dist/jspreadsheet.css')
+//            ->addCssFile('https://cdn.jsdelivr.net/npm/jsuites@6.1.1/dist/jsuites.css');
     }
 
 }
