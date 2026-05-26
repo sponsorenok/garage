@@ -1,0 +1,58 @@
+{% extends '@EasyAdmin/crud/new.html.twig' %}
+
+{% block configured_stylesheets %}
+    {{ parent() }}
+    <style>
+        .vehicle-edit-page { max-width: 1320px; }
+        .vehicle-form-card {
+            background: var(--body-bg, #fff);
+            border: 1px solid var(--border-color, #dfe3e7);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
+            padding: 14px 16px 10px;
+        }
+        .vehicle-form-card .form-fieldset { margin-bottom: 12px; }
+        .vehicle-form-card .form-fieldset-header {
+            border-bottom: 1px solid var(--border-color, #dfe3e7);
+            margin-bottom: 10px;
+            min-height: auto;
+            padding-bottom: 6px;
+        }
+        .vehicle-form-card .form-fieldset-title { font-size: 14px; font-weight: 700; line-height: 1.2; }
+        .vehicle-form-card .row { --bs-gutter-x: 12px; --bs-gutter-y: 0; }
+        .vehicle-form-card .form-group { margin-bottom: 8px !important; }
+        .vehicle-form-card label,
+        .vehicle-form-card .form-label { font-size: 12px; font-weight: 600; line-height: 1.15; margin-bottom: 3px; }
+        .vehicle-form-card .form-control,
+        .vehicle-form-card .form-select,
+        .vehicle-form-card .ts-control { min-height: 34px; padding-bottom: 5px; padding-top: 5px; }
+        .vehicle-form-card textarea.form-control { min-height: 72px; }
+        .vehicle-form-card .form-help,
+        .vehicle-form-card small.form-text { font-size: 11px; margin-top: 3px; }
+        .vehicle-document-shortcuts {
+            background: var(--body-bg, #fff);
+            border: 1px solid var(--border-color, #dfe3e7);
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            max-width: 1320px;
+            padding: 10px 12px;
+        }
+        .vehicle-document-shortcuts strong { display: block; font-size: 13px; margin-bottom: 2px; }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="vehicle-document-shortcuts">
+        <strong>Паспорт формуляр</strong>
+        Завантаження паспорта доступне після першого збереження авто, коли зʼявиться ID для звʼязку документа з авто.
+    </div>
+
+    <div class="vehicle-edit-page">
+        <div class="vehicle-form-card">
+            {% block new_form %}
+                {{ form(new_form) }}
+            {% endblock new_form %}
+        </div>
+    </div>
+{% endblock %}

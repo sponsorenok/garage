@@ -1,0 +1,61 @@
+{% extends '@EasyAdmin/crud/edit.html.twig' %}
+
+{% block configured_stylesheets %}
+    {{ parent() }}
+    <style>
+        .document-manager-card {
+            max-width: 1120px;
+            background: var(--body-bg, #fff);
+            border: 1px solid var(--border-color, #dfe3e7);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
+            padding: 14px 16px 10px;
+        }
+
+        .document-manager-card .form-fieldset { margin-bottom: 12px; }
+        .document-manager-card .form-fieldset-header {
+            border-bottom: 1px solid var(--border-color, #dfe3e7);
+            margin-bottom: 10px;
+            min-height: auto;
+            padding-bottom: 6px;
+        }
+        .document-manager-card .form-fieldset-title {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .document-manager-card .row { --bs-gutter-x: 12px; }
+        .document-manager-card .form-group { margin-bottom: 8px !important; }
+        .document-manager-card label,
+        .document-manager-card .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 3px;
+        }
+        .document-manager-card .form-control,
+        .document-manager-card .form-select,
+        .document-manager-card .ts-control {
+            min-height: 34px;
+            padding-bottom: 5px;
+            padding-top: 5px;
+        }
+        .document-manager-card .form-help,
+        .document-manager-card small.form-text {
+            font-size: 11px;
+            margin-top: 3px;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="document-manager-card">
+        {% block edit_form %}
+            {{ form(edit_form) }}
+        {% endblock %}
+    </div>
+
+    {% block delete_form %}
+        {{ include('@EasyAdmin/crud/includes/_action_confirmation_modal.html.twig', with_context: false) }}
+    {% endblock %}
+{% endblock %}

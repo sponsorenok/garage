@@ -2,7 +2,256 @@
 
 {# ВАЖЛИВО: main, а не content #}
 {% block main %}
-    {{ parent() }}
+    {% set vehicle = ea.entity.instance %}
+    <div class="container card p-3 m-0">
+    <div class="row">
+        <div class="col-md-12">
+<div class="row">
+    <div class="col-md-4">
+        <div id="vehicleImagesCarousel" class="carousel slide" data-bs-ride="carousel" data-interval="false">
+            <div class="carousel-inner">
+                {% if images is defined and images is not empty %}
+                    {% for image in images %}
+                        <div class="object-fit-contain align-items-center justify-content-center align-content-center carousel-item {{ loop.first ? 'active' : '' }}">
+                            <img class="d-block " src="/uploads/vehicle-images/{{ image.fileName }}" alt="{{ image.title ?: 'Фото авто' }}" style="height: 200px">
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="carousel-item active">
+                        <img class="d-block w-100" src="https://dummyimage.com/600x400/777/fff&text=No+vehicle+images" alt="Фото авто не додано">
+                    </div>
+                {% endif %}
+            </div>
+            {% if images is defined and images|length > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#vehicleImagesCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#vehicleImagesCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            {% endif %}
+        </div>
+        <a class="btn btn-sm btn-primary mt-2"
+           href="{{ ea_url()
+               .setController('App\\Controller\\Admin\\VehicleImageCrudController')
+               .setAction('new')
+               .set('vehicleId', vehicle.id)
+           }}">
+            + Додати фото
+        </a>
+    </div>
+    <div class="col-md-4 d-flex flex-row">
+        <ul style="list-style-type: none">
+            <li>Марка базового шасі:</li>
+            <li>Найменування ОіВТ:</li>
+            <li>Військовий номер:</li>
+            <li>Тип ОіВТ:</li>
+            <li>Номер шасі (VIN):</li>
+            <li>Номер двигуна:</li>
+            <li>Рік виготовлення:</li>
+        </ul>
+        <ul style="list-style-type: none">
+            <li>{{ vehicle.make ?: '—' }}</li>
+            <li>{{ vehicle.type ?: '—' }}</li>
+            <li>{{ vehicle.plate ?: '—' }}</li>
+            <li>{{ vehicle.type ?: '—' }}</li>
+            <li>{{ vehicle.vin ?: '—' }}</li>
+            <li>{{ vehicle.engineNumber ?: '—' }}</li>
+            <li>{{ vehicle.year ?: '—' }}</li>
+        </ul>
+    </div>
+    <div class="col-md-4 d-flex flex-row">
+        <ul style="list-style-type: none">
+            <li>Заводський номер ОіВТ:</li>
+            <li>Служба забезпечення:</li>
+            <li>Категорія (якісний стан):</li>
+            <li>Група експлуатації:</li>
+            <li>Первісна вартість:</li>
+            <li>Паспорт формуляр:</li>
+            <li>Технічний талон ТЗ:</li>
+            <li>Наказ на введення в експлуатацію:</li>
+        </ul>
+        <ul style="list-style-type: none">
+            <li>{{ vehicle.factoryNumber ?: '—' }}</li>
+            <li>{{ vehicle.supportService ?: '—' }}</li>
+            <li>{{ vehicle.qualityCategory ?: '—' }}</li>
+            <li>{{ vehicle.operationGroup ?: '—' }}</li>
+            <li>{{ vehicle.initialCost is not null ? vehicle.initialCost : '—' }}</li>
+            <li>
+                {% if vehicle.passportForm %}
+                    {% set passport = vehicle.passportForm %}
+                    {% if passport.fileName %}
+                        <a target="_blank" href="/uploads/documents/{{ passport.fileName }}">{{ passport.docNumber ?: passport.title ?: passport.fileName }}</a>
+                    {% else %}
+                        {{ passport.docNumber ?: passport.title ?: 'Документ' }}
+                    {% endif %}
+                    {% if passport.docDate %} від {{ passport.docDate|date('d.m.Y') }}{% endif %}
+                {% else %}
+                    —
+                {% endif %}
+            </li>
+            <li>{{ vehicle.technicalCertificate ?: '—' }}</li>
+            <li>{{ vehicle.commissioningOrder ?: '—' }}</li>
+        </ul>
+    </div>
+</div>
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body d-flex flex-row">
+                            <ul style="list-style-type: none" class="m-0 p-0">
+                                <li>Напрацювання (км пробігу):</li>
+                                <li class="text-right">-за 2025рік:</li>
+                                <li>Показник одометра:</li>
+                            </ul>
+                            <ul style="list-style-type: none" class="m-0">
+                                <li>{{ vehicle.currentOdometerKm is not null ? vehicle.currentOdometerKm ~ ' km' : '—' }}</li>
+                                <li>{{ vehicle.annualMileageKm is not null ? vehicle.annualMileageKm ~ ' km' : '—' }}</li>
+                                <li>{{ vehicle.currentOdometerKm is not null ? vehicle.currentOdometerKm ~ ' km' : '—' }}</li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-secondary text-center btn-md m-1">Аналітика за рік/місяць...</button>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex flex-row">
+                    <ul style="list-style-type: none">
+                        <li>Надхоження:</li>
+                        <li>Надійшло від:</li>
+                        <li>Постачальник:</li>
+                        <li>Документи на отримання:</li>
+                    </ul>
+                    <ul style="list-style-type: none">
+                        <li>{{ vehicle.receiptDate ? vehicle.receiptDate|date('d.m.Y') : '—' }}</li>
+                        <li>{{ vehicle.receivedFrom ?: '—' }}</li>
+                        <li>{{ vehicle.supplier ?: '—' }}</li>
+                        <li>{{ vehicle.receivingDocuments ?: '—' }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-4 d-flex flex-row">
+                    <ul style="list-style-type: none">
+                        <li>Відправлено до:</li>
+                        <li>Передано в підрозділ:</li>
+                    </ul>
+                    <ul style="list-style-type: none">
+                        <li>{{ vehicle.sentTo ?: '—' }}</li>
+                        <li>{{ vehicle.department ?: '—' }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-4 d-flex flex-row">
+                    <ul style="list-style-type: none">
+                        <li>Потреба в АКБ:</li>
+                        <li>Наявність АКБ:</li>
+                        <li>Потреба в шинах:</li>
+                        <li>Наявність шин:</li>
+                    </ul>
+                    <ul style="list-style-type: none">
+                        <li>{{ vehicle.batteryRequired is not null ? vehicle.batteryRequired : '—' }}</li>
+                        <li>{{ vehicle.batteryAvailable is not null ? vehicle.batteryAvailable : '—' }}</li>
+                        <li>{{ vehicle.tiresRequired is not null ? vehicle.tiresRequired : '—' }}</li>
+                        <li>{{ vehicle.tiresAvailable is not null ? vehicle.tiresAvailable : '—' }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-4 d-flex flex-row">
+                    <ul style="list-style-type: none">
+                        <li>Періодичність ТО:</li>
+                        <li>Дата останнього ТО:</li>
+                        <li>Реєстраційний номер ТЗ:</li>
+                        <hr>
+                        <li>Габаритні розміри(д*ш*в):</li>
+                        <li>Повна маса:</li>
+                        <li>Маса без навантаження:</li>
+                    </ul>
+                    <ul style="list-style-type: none">
+                        <li>{{ vehicle.maintenanceIntervalKm is not null ? vehicle.maintenanceIntervalKm ~ ' km' : '—' }}</li>
+                        <li>{{ vehicle.lastMaintenanceDate ? vehicle.lastMaintenanceDate|date('d.m.Y') : '—' }}</li>
+                        <li>{{ vehicle.registrationNumber ?: '—' }}</li>
+                        <hr>
+                        <li>{{ vehicle.dimensions ?: '—' }}</li>
+                        <li>{{ vehicle.grossWeightKg is not null ? vehicle.grossWeightKg ~ ' кг' : '—' }}</li>
+                        <li>{{ vehicle.curbWeightKg is not null ? vehicle.curbWeightKg ~ ' кг' : '—' }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-4 d-flex flex-row">
+                    <ul style="list-style-type: none">
+                        <li>Норми витрати пального:</li>
+                        <hr>
+                        <li><button type="button" class="btn btn-secondary text-center btn-md m-1">Отримані запчастини</button></li>
+
+                    </ul>
+                    <ul style="list-style-type: none">
+                        <li>{{ vehicle.fuelConsumptionRates ?: '—' }}</li>
+
+                    </ul>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+{#    <div class="content-panel mt-4">#}
+{#        <div class="content-panel-header">#}
+{#            <h3 class="content-panel-title">Фото авто</h3>#}
+{#        </div>#}
+
+{#        <div class="content-panel-body">#}
+{#            {% if images is not defined or images is empty %}#}
+{#                <div class="text-muted">Фото не додано.</div>#}
+{#            {% else %}#}
+{#                <table class="table table-sm align-middle">#}
+{#                    <thead>#}
+{#                    <tr>#}
+{#                        <th>Фото</th>#}
+{#                        <th>Подія</th>#}
+{#                        <th>Пробіг</th>#}
+{#                        <th>Документ</th>#}
+{#                    </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                    {% for image in images %}#}
+{#                        <tr>#}
+{#                            <td>#}
+{#                                <a target="_blank" href="/uploads/vehicle-images/{{ image.fileName }}">#}
+{#                                    <img src="/uploads/vehicle-images/{{ image.fileName }}" alt="{{ image.title ?: 'Фото авто' }}" style="width: 96px; height: 64px; object-fit: cover; border-radius: 4px;">#}
+{#                                </a>#}
+{#                            </td>#}
+{#                            <td>{{ image.eventDate ? image.eventDate|date('d.m.Y') : (image.title ?: '—') }}</td>#}
+{#                            <td>{{ image.odometerKm is not null ? image.odometerKm ~ ' км' : '—' }}</td>#}
+{#                            <td>{{ image.document ?: '—' }}</td>#}
+{#                        </tr>#}
+{#                    {% endfor %}#}
+{#                    </tbody>#}
+{#                </table>#}
+{#            {% endif %}#}
+
+{#            <div class="mt-2 d-flex gap-2">#}
+{#                <a class="btn btn-sm btn-outline-primary"#}
+{#                   href="{{ ea_url()#}
+{#                       .setController('App\\Controller\\Admin\\VehicleImageCrudController')#}
+{#                       .setAction('index')#}
+{#                       .set('filters[vehicle][comparison]', '=')#}
+{#                       .set('filters[vehicle][value]', ea.entity.instance.id)#}
+{#                   }}">#}
+{#                    Всі фото авто#}
+{#                </a>#}
+{#                <a class="btn btn-sm btn-primary"#}
+{#                   href="{{ ea_url()#}
+{#                       .setController('App\\Controller\\Admin\\VehicleImageCrudController')#}
+{#                       .setAction('new')#}
+{#                       .set('vehicleId', ea.entity.instance.id)#}
+{#                   }}">#}
+{#                    + Додати фото#}
+{#                </a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
 
     <div class="content-panel mt-4">
         <div class="content-panel-header">
@@ -21,6 +270,7 @@
                         <th>Підрозділ</th>
                         <th>Дата</th>
                         <th>Файл</th>
+                        <th>Фото</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -36,6 +286,17 @@
                                 {% else %}
                                     —
                                 {% endif %}
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   href="{{ ea_url()
+                                       .setController('App\\Controller\\Admin\\VehicleImageCrudController')
+                                       .setAction('new')
+                                       .set('vehicleId', ea.entity.instance.id)
+                                       .set('documentId', d.id)
+                                   }}">
+                                    + Фото
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}

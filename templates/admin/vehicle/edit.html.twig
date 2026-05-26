@@ -1,0 +1,155 @@
+{% extends '@EasyAdmin/crud/edit.html.twig' %}
+
+{% block configured_stylesheets %}
+    {{ parent() }}
+    <style>
+        .vehicle-edit-page {
+            max-width: 1320px;
+        }
+
+        .vehicle-form-card {
+            background: var(--body-bg, #fff);
+            border: 1px solid var(--border-color, #dfe3e7);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
+            padding: 14px 16px 10px;
+        }
+
+        .vehicle-form-card .content-panel,
+        .vehicle-form-card .field-form_panel {
+            border: 0;
+            box-shadow: none;
+            margin: 0 0 12px;
+            padding: 0;
+        }
+
+        .vehicle-form-card .form-panel-header,
+        .vehicle-form-card .content-panel-header {
+            border-bottom: 1px solid var(--border-color, #dfe3e7);
+            margin: 0 0 10px;
+            min-height: auto;
+            padding: 0 0 6px;
+        }
+
+        .vehicle-form-card .form-panel-title,
+        .vehicle-form-card .content-panel-title {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .vehicle-form-card .row {
+            --bs-gutter-x: 12px;
+            --bs-gutter-y: 0;
+        }
+
+        .vehicle-form-card .form-group {
+            margin-bottom: 8px !important;
+        }
+
+        .vehicle-form-card label,
+        .vehicle-form-card .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 3px;
+        }
+
+        .vehicle-form-card .form-control,
+        .vehicle-form-card .form-select,
+        .vehicle-form-card .ts-control {
+            min-height: 34px;
+            padding-bottom: 5px;
+            padding-top: 5px;
+        }
+
+        .vehicle-form-card textarea.form-control {
+            min-height: 72px;
+        }
+
+        .vehicle-form-card .form-help,
+        .vehicle-form-card small.form-text {
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .vehicle-form-card .form-widget-compound,
+        .vehicle-form-card .form-widget {
+            min-width: 0;
+        }
+
+        .vehicle-form-card .form-actions,
+        .vehicle-form-card .ea-form-actions {
+            border-top: 1px solid var(--border-color, #dfe3e7);
+            margin-top: 8px;
+            padding-top: 10px;
+        }
+
+        .vehicle-document-shortcuts {
+            align-items: center;
+            background: var(--body-bg, #fff);
+            border: 1px solid var(--border-color, #dfe3e7);
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            max-width: 1320px;
+            padding: 10px 12px;
+        }
+
+        .vehicle-document-shortcuts__meta {
+            font-size: 12px;
+            line-height: 1.25;
+        }
+
+        .vehicle-document-shortcuts__title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    {% set vehicle = entity.instance %}
+    {% set passport = vehicle.passportForm %}
+
+    <div class="vehicle-document-shortcuts">
+        <div class="vehicle-document-shortcuts__meta">
+            <div class="vehicle-document-shortcuts__title">Паспорт формуляр</div>
+            {% if passport %}
+                {% if passport.fileName %}
+                    <a target="_blank" href="/uploads/documents/{{ passport.fileName }}">{{ passport.docNumber ?: passport.title ?: passport.fileName }}</a>
+                {% else %}
+                    {{ passport.docNumber ?: passport.title ?: 'Документ' }}
+                {% endif %}
+                {% if passport.docDate %} від {{ passport.docDate|date('d.m.Y') }}{% endif %}
+            {% else %}
+                Документ ще не додано.
+            {% endif %}
+        </div>
+        <a class="btn btn-sm btn-primary"
+           href="{{ ea_url()
+               .setController('App\\Controller\\Admin\\DocumentCrudController')
+               .setAction('new')
+               .set('vehicleId', vehicle.id)
+               .set('documentTypeCode', 'PASSPORT_VEHICLE')
+           }}">
+            + Завантажити паспорт
+        </a>
+    </div>
+
+    <div class="vehicle-edit-page">
+        <div class="vehicle-form-card">
+            {% block edit_form %}
+                {{ form(edit_form) }}
+            {% endblock edit_form %}
+        </div>
+    </div>
+
+    {% block delete_form %}
+        {{ include('@EasyAdmin/crud/includes/_action_confirmation_modal.html.twig', with_context: false) }}
+    {% endblock delete_form %}
+{% endblock %}

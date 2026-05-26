@@ -6,12 +6,16 @@ use App\Entity\Vehicle;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\DepartmentVehicleSlot;
@@ -25,6 +29,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\DocumentRepository;
+use App\Repository\VehicleImageRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 
 class VehicleCrudController extends AbstractCrudController
@@ -36,28 +41,128 @@ class VehicleCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        if (Crud::PAGE_INDEX === $pageName) {
+            return [
+                TextField::new('plate', 'Військовий номер'),
+                TextField::new('make', 'Марка базового шасі '),
+                TextField::new('model', 'Модель'),
+                AssociationField::new('type', 'Найменування зразка ОіВТ')
+                    ->setRequired(false),
+                AssociationField::new('department', 'Підрозділ')
+                    ->setRequired(false),
+                IntegerField::new('currentOdometerKm', 'Пробіг, км'),
+            ];
+        }
+
         return [
-            TextField::new('plate', 'Військовий номер'),
-            TextField::new('vin', 'VIN')->hideOnIndex(),
+            FormField::addFieldset('Основні дані', 'fa fa-car'),
+            TextField::new('make', 'Марка базового шасі ')
+                ->setColumns(6),
+            TextField::new('model', 'Модель')
+                ->setColumns(6),
+            AssociationField::new('type', 'Найменування ОіВТ')
+                ->setRequired(false)
+                ->setColumns(12),
+            TextField::new('plate', 'Військовий номер')
+                ->setColumns(6),
+            TextField::new('vin', 'Номер шасі (VIN)')
+                ->setColumns(6),
+            TextField::new('engineNumber', 'Номер двигуна')
+                ->setColumns(6),
+            IntegerField::new('year', 'Рік виготовлення')
+                ->setColumns(6),
 
-            TextField::new('make', 'Марка базового шасі '),
-            TextField::new('model', 'Модель'),
-            IntegerField::new('year', 'Рік')->hideOnIndex(),
+            TextField::new('factoryNumber', 'Заводський номер ОіВТ')
+                ->setColumns(6),
+            ChoiceField::new('supportService', 'Служба забезпечення')
+                ->setChoices([
+                    'Служба 1' => 'service_1',
+                    'Служба 2' => 'service_2',
+                    'Служба 3' => 'service_3',
+                    'Служба 4' => 'service_4',
+                ])
+                ->setColumns(6),
+            ChoiceField::new('qualityCategory', 'Категорія (якісний стан)')
+                ->setChoices([
+                    'I' => 'cat_1',
+                    'II' => 'cat_2',
+                    'III' => 'cat_3',
+                    'IV' => 'cat_4',
+                    'V' => 'cat_5',
+                ])
+                ->setColumns(6),
+            ChoiceField::new('operationGroup', 'Група експлуатації')
+                ->setChoices([
+                    'Група 1' => 'group_1',
+                    'Група 2' => 'group_2',
+                    'Група 3' => 'group_3',
+                    'Група 4' => 'group_4',
+                ])
+                ->setColumns(6),
+            NumberField::new('initialCost', 'Первісна вартість')
+                ->setColumns(6),
+            TextField::new('technicalCertificate', 'Технічний талон ТЗ')
+                ->setColumns(6),
+            TextField::new('commissioningOrder', 'Наказ на введення в експлуатацію')
+                ->setColumns(6),
 
-            IntegerField::new('currentOdometerRm', 'Пробіг, км'),
-            NumberField::new('currentEngineHours', 'Мотогодини')->hideOnIndex(),
+            FormField::addFieldset('Напрацювання', 'fa fa-gauge-high'),
+            IntegerField::new('currentOdometerKm', 'Показник одометра, км')
+                ->setColumns(6),
+            IntegerField::new('annualMileageKm', 'Пробіг за рік, км')
+                ->setColumns(6),
+            NumberField::new('currentEngineHours', 'Мотогодини')
+                ->setColumns(6),
+            TextareaField::new('notes', 'Нотатки')
+                ->setColumns(12),
 
-            AssociationField::new('type', 'Найменування зразка ОіВТ')
-                ->setRequired(false),
+            FormField::addFieldset('Надходження та передача', 'fa fa-exchange-alt'),
+            DateField::new('receiptDate', 'Надходження')
+                ->setColumns(6),
+            TextField::new('receivedFrom', 'Надійшло від')
+                ->setColumns(6),
+            AssociationField::new('supplier', 'Постачальник')
+                ->setRequired(false)
+                ->setColumns(12),
+            TextareaField::new('receivingDocuments', 'Документи на отримання')
+                ->setColumns(12),
 
-            AssociationField::new('department', 'Підрозділ')
-                ->setRequired(false),
-
+            TextField::new('sentTo', 'Відправлено до')
+                ->setColumns(12),
+            AssociationField::new('department', 'Передано в підрозділ')
+                ->setRequired(false)
+                ->setColumns(12),
             AssociationField::new('staffSlot', 'Штатна позиція')
                 ->setRequired(false)
-                ->setHelp('Призначає автівку на штатний слот підрозділу'),
+                ->setHelp('Призначає автівку на штатний слот підрозділу')
+                ->setColumns(12),
 
-            TextareaField::new('notes', 'Нотатки')->hideOnIndex(),
+            FormField::addFieldset('АКБ та шини', 'fa fa-car-battery'),
+            IntegerField::new('batteryRequired', 'Потреба в АКБ')
+                ->setColumns(6),
+            IntegerField::new('batteryAvailable', 'Наявність АКБ')
+                ->setColumns(6),
+            IntegerField::new('tiresRequired', 'Потреба в шинах')
+                ->setColumns(6),
+            IntegerField::new('tiresAvailable', 'Наявність шин')
+                ->setColumns(6),
+
+            FormField::addFieldset('ТО, габарити та норми', 'fa fa-wrench'),
+            IntegerField::new('maintenanceIntervalKm', 'Періодичність ТО, км')
+                ->setColumns(6),
+            DateField::new('lastMaintenanceDate', 'Дата останнього ТО')
+                ->setColumns(6),
+            TextField::new('registrationNumber', 'Реєстраційний номер ТЗ')
+                ->setColumns(6),
+            TextField::new('dimensions', 'Габаритні розміри (д*ш*в)')
+                ->setColumns(6),
+            IntegerField::new('grossWeightKg', 'Повна маса, кг')
+                ->setColumns(6),
+            IntegerField::new('curbWeightKg', 'Маса без навантаження, кг')
+                ->setColumns(6),
+
+            TextareaField::new('fuelConsumptionRates', 'Норми витрати пального')
+                ->setColumns(12),
         ];
     }
 
@@ -66,6 +171,7 @@ class VehicleCrudController extends AbstractCrudController
         return $filters
             ->add(EntityFilter::new('department', 'Підрозділ'))
             ->add(EntityFilter::new('type', 'Тип автівки'))
+            ->add(EntityFilter::new('supplier', 'Постачальник'))
             ->add(EntityFilter::new('staffSlot', 'Штатна позиція'));
     }
 
@@ -79,7 +185,9 @@ class VehicleCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_EDIT, 'Редагувати автівку')
             ->showEntityActionsInlined()
             ->overrideTemplate('crud/detail', 'admin/vehicle/detail.html.twig')
-            ->setSearchFields(['plate', 'vin', 'make', 'model']);
+            ->overrideTemplate('crud/new', 'admin/vehicle/new.html.twig')
+            ->overrideTemplate('crud/edit', 'admin/vehicle/edit.html.twig')
+            ->setSearchFields(['plate', 'vin', 'make', 'model', 'engineNumber', 'factoryNumber', 'registrationNumber']);
     }
 
     private RequestStack $requestStack;
@@ -88,6 +196,7 @@ class VehicleCrudController extends AbstractCrudController
     public function __construct(
         RequestStack $requestStack,
         private DocumentRepository $documentRepo,
+        private VehicleImageRepository $imageRepo,
         EntityManagerInterface $em
     ) {
         $this->requestStack = $requestStack;
@@ -188,7 +297,9 @@ class VehicleCrudController extends AbstractCrudController
 
             if ($vehicle instanceof Vehicle && $vehicle->getId()) {
                 $docs = $this->documentRepo->findForVehicle($vehicle->getId(), 50);
+                $images = $this->imageRepo->findForVehicle($vehicle->getId(), 50);
                 $responseParameters->set('docs', $docs);
+                $responseParameters->set('images', $images);
             }
         }
 

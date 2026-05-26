@@ -14,7 +14,7 @@ class ServiceEventItem
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ServiceEvent $serviceEvent = null;
 

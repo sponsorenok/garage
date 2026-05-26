@@ -10,6 +10,7 @@ use App\Entity\ServiceEventItem;
 use App\Entity\Supplier;
 use App\Entity\User;
 use App\Entity\Vehicle;
+use App\Entity\VehicleImage;
 use App\Entity\VehicleType;
 use App\Entity\Warehouse;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
@@ -63,6 +64,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Склади', 'fa fa-warehouse', \App\Entity\Warehouse::class);
         yield MenuItem::linkToCrud('Номенклатура', 'fa fa-cubes', \App\Entity\Item::class);
         yield MenuItem::linkToCrud('Документи', 'fa fa-file', Document::class);
+        yield MenuItem::linkToCrud('Фото авто', 'fa fa-image', VehicleImage::class);
         yield MenuItem::linkToCrud('Заявки на запчастини', 'fa fa-clipboard-list', PartRequest::class);
         yield MenuItem::linkToCrud('Типи документів', 'fa fa-tags', DocumentType::class);
 

@@ -1,0 +1,8 @@
+{% set image = entity.instance %}
+{% if image.fileName %}
+    <a target="_blank" href="/uploads/vehicle-images/{{ image.fileName }}">
+        <img src="/uploads/vehicle-images/{{ image.fileName }}" alt="{{ image.title ?: image.fileName }}" style="width: 96px; height: 64px; object-fit: cover; border-radius: 4px;">
+    </a>
+{% else %}
+    —
+{% endif %}
